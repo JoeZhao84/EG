@@ -49,9 +49,9 @@ class ExponentialGradient:
                 g.append(1)
             else:
                 g.append(0)
-            print(g)
             fractions = previous_weight[i] * np.exp((learning_rate * g[i]) / all_weighted_value)
             result.append(fractions / numerator)
+        print(g)    
         print("Result=\t\t\t\t" + str(result))
         return result
 
