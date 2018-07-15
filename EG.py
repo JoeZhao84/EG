@@ -39,9 +39,9 @@ class ExponentialGradient:
         print("Data set =\t\t" + str(data_set))
 
         result = []
-        all_weighted_value = np.sum([previous_weight[i] * data_set[i] for i in range(len(data_set))])
-        numerator = np.sum([previous_weight[i] * np.exp((learning_rate * data_set[i]) / all_weighted_value) for i in range(len(data_set))])
-        print("Numerator=\t\t\t" + str(numerator))
+        #all_weighted_value = np.sum([previous_weight[i] * data_set[i] for i in range(len(data_set))])
+        #numerator = np.sum([previous_weight[i] * np.exp((learning_rate * data_set[i]) / all_weighted_value) for i in range(len(data_set))])
+        #print("Numerator=\t\t\t" + str(numerator))
         
         g = []
         for i in range(len(data_set)):
@@ -49,9 +49,16 @@ class ExponentialGradient:
                 g.append(1)
             else:
                 g.append(0)
+        print(g)
+        
+        all_weighted_value = np.sum([previous_weight[i] * data_set[0][i] for i in range(len(data_set))])   
+        numerator = np.sum([previous_weight[i] * np.exp((learning_rate * g[i]) / all_weighted_value) for i in range(len(data_set))])        
+        print("Numerator=\t\t\t" + str(numerator))
+        
+        for i in range(len(data_set)):    
             fractions = previous_weight[i] * np.exp((learning_rate * g[i]) / all_weighted_value)
             result.append(fractions / numerator)
-        print(g)    
+          
         print("Result=\t\t\t\t" + str(result))
         return result
 
