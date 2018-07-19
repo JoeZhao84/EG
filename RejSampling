@@ -1,0 +1,23 @@
+import os
+os.chdir('C:\Work\workspaces\Spyder')
+import pandas as pd
+import math
+
+df = pd.read_csv('Titanic.csv')
+
+df.head(5)
+
+df.dtypes
+
+df.groupby(['Pclass', 'Sex', 'Embarked']).size()
+
+#so the biggest difference is male/S/3: 265 and female/s/3: 88
+ratio = 88 / 265    #0.33..
+
+male_count = df[(df['Pclass'] == 1) & (df['Embarked'] == 'C') & (df['Sex'] == 'male')]['Sex'].count()
+female_count_e = int(round(male_count * ratio))
+
+acc_sample = df[(df['Pclass'] == 1) & (df['Embarked'] == 'C') & (df['Sex'] == 'female')].sample(n=female_count_e,replace=True)
+
+newDF = pd.DataFrame() 
+newDF = newDF.append(acc_sample, ignore_index=True)
