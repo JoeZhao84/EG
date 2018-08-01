@@ -23,21 +23,22 @@ df.groupby(['Pclass', 'Sex', 'Embarked']).size()
 class RejSampling(object):
     """
     """
-    def __init__(self):
-        self.variables = []
+    def __init__(self,df,control_variables,test_variable,base_category,test_category):
+        self.control_variables = control_variables
+        self.df = df
+        self.test_variable = test_variable
+        self.base_category = base_category
+        self.test_category = test_category
         
-    def get_variables(self,variables):
-        self.variables = variables
-        
-    def get_list(self,df):
-        n_var = len(self.variables)
-        unique_list = [None] * len(self.variables)
+    def get_list(self):
+        n_var = len(self.control_variables)
+        unique_list = [None] * len(self.control_variables)
         for i in range(n_var):
-            t = df[self.variables[i]].unique()
+            t = df[self.control_variables[i]].unique()
             unique_list[i] = t[~pd.isnull(t)]
         return unique_list
            
-    def get_ratio(self,df,control_variable,control,test):
+    def get_ratio(self):
         ratios = []
         import itertools
         unique_pair_list = []
@@ -45,13 +46,13 @@ class RejSampling(object):
             unique_pair_list.append(element)
             
         for i in unique_pair_list:
-            temp_df = df[(df[self.variables[0]] == i[0])]
+            temp_df = df[(df[self.control_variables[0]] == i[0])]
             j = 1
-            while j < len(self.variables):
-                temp_df = temp_df[(temp_df[self.variables[j]] == i[j])]
+            while j < len(self.control_variables):
+                temp_df = temp_df[(temp_df[self.control_variables[j]] == i[j])]
                 j = j + 1
-            male_count = temp_df[temp_df[control_variable] == control][control_variable].count()
-            female_count = temp_df[temp_df[control_variable] == test][control_variable].count()
+            male_count = temp_df[temp_df[self.test_variable] == self.base_category][self.test_variable].count()
+            female_count = temp_df[temp_df[self.test_variable] == self.test_category][self.test_variable].count()
             ratio = female_count / male_count
             ratios.append(ratio)
             nonnan_ratios = [x for x in ratios if str(x) != 'nan']
@@ -69,7 +70,7 @@ class RejSampling(object):
 #            min_ratio = min(ratios)
 #        return min_ratio
     
-    def get_sample(self,df,control_variable,control,test):
+    def get_sample(self):
         newDF = pd.DataFrame()
         import itertools
         unique_pair_list = []
@@ -77,30 +78,28 @@ class RejSampling(object):
             unique_pair_list.append(element)
             
         for i in unique_pair_list:
-            temp_df = df[(df[self.variables[0]] == i[0])]
+            temp_df = df[(df[self.control_variables[0]] == i[0])]
             j = 1
-            while j < len(self.variables):
-                temp_df = temp_df[(temp_df[self.variables[j]] == i[j])]
+            while j < len(self.control_variables):
+                temp_df = temp_df[(temp_df[self.control_variables[j]] == i[j])]
                 j = j + 1
-            male_count = temp_df[temp_df[control_variable] == control][control_variable].count()
+            male_count = temp_df[temp_df[self.test_variable] == self.base_category][self.test_variable].count()
             female_count_e = int(round(male_count * ratio))
             if female_count_e == 0:
                 pass  
-            elif temp_df[temp_df[control_variable] == test][control_variable].count() == 0:
+            elif temp_df[temp_df[self.test_variable] == self.test_category][self.test_variable].count() == 0:
                 pass
             else:
-                acc_sample =  temp_df[temp_df[control_variable] == test].sample(n=female_count_e,replace=True)
+                acc_sample =  temp_df[temp_df[self.test_variable] == self.test_category].sample(n=female_count_e,replace=True)
             #print(acc_sample)
                 newDF = newDF.append(acc_sample, ignore_index=True)
         return newDF
-
 #unique_list = get_data(df,['Pclass', 'Embarked'])
 ################ usage ###################
-sample = RejSampling()  
-variables = sample.get_variables(['Pclass', 'Embarked'])  
-unique_list = sample.get_list(df)
-ratio = sample.get_ratio(df,'Sex','male','female')
-s = sample.get_sample(df,'Sex','male','female')
+sample = RejSampling(df,['Pclass', 'Embarked'],'Sex','male','female')  
+unique_list = sample.get_list()
+ratio = sample.get_ratio()
+s = sample.get_sample()
 
 ##########################################
 
