@@ -34,7 +34,7 @@ class RejSampling(object):
         n_var = len(self.control_variables)
         unique_list = [None] * len(self.control_variables)
         for i in range(n_var):
-            t = df[self.control_variables[i]].unique()
+            t = self.df[self.control_variables[i]].unique()
             unique_list[i] = t[~pd.isnull(t)]
         return unique_list
            
@@ -46,7 +46,7 @@ class RejSampling(object):
             unique_pair_list.append(element)
             
         for i in unique_pair_list:
-            temp_df = df[(df[self.control_variables[0]] == i[0])]
+            temp_df = self.df[(self.df[self.control_variables[0]] == i[0])]
             j = 1
             while j < len(self.control_variables):
                 temp_df = temp_df[(temp_df[self.control_variables[j]] == i[j])]
@@ -78,7 +78,7 @@ class RejSampling(object):
             unique_pair_list.append(element)
             
         for i in unique_pair_list:
-            temp_df = df[(df[self.control_variables[0]] == i[0])]
+            temp_df = self.df[(self.df[self.control_variables[0]] == i[0])]
             j = 1
             while j < len(self.control_variables):
                 temp_df = temp_df[(temp_df[self.control_variables[j]] == i[j])]
